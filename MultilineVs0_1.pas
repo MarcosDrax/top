@@ -179,5 +179,5 @@ while true do Begin
 	if close =  1 then Break;
 	if ReadLn(S) = eof then close := 1;
 End;
-//abort(FormatNumeric(folha,'00000'));
+abort(FormatNumeric((folha/4),'00000'));
 Convert(4,true,false,false,250,false);
