@@ -1,4 +1,11 @@
+//<-----------------------------------Script Padrão INI------------------------------------------>
+//Criar um script que exiba um relatorio com o registro que estara em cada caixa e o numero da caixa, 
+//mais a quantidade total por caixa e a quantidade total do arquivo. Todos devem estar por profundidade
+//Nao usar o script padrao, criar do zero. Fazer logica que separa quantidades por caixa
+//<-----------------------------------Script Padrão FIM------------------------------------------>
+folha := 0;
 Readln(s);
+//<-----------------------------------variaveis Multiline INI------------------------------------------>
 impr := 0;
 close := 0;
 linhas :='';
@@ -7,10 +14,11 @@ qtdlinhas := 0;
 qtd_pix:= 0;
 bloco_parc := 330;
 bloco_pix := 503;
-
+//<-----------------------------------variaveis Multiline INI------------------------------------------>
 while true do Begin
 	ident        := TrimStr(GetString(S,1,1));
 	If (ident = '1') and (impr = 1) then Begin
+	//<-----------------------------------variaveis padrão INI------------------------------------------>
 		cadastro            := GetString(linha_Cad,3,16);
 		contribuinte        := GetString(linha_Cad,19,150);
 		inscricao           := GetString(linha_Cad,283,17);
@@ -33,7 +41,7 @@ while true do Begin
 		venal_terreno       := getfloat(linha_taxa,19,11);
 		venal_predio        := getfloat(linha_taxa,30,11);
 		venal_imovel        := getfloat(linha_taxa,41,11);
-
+	//<-----------------------------------variaveis padrão FIM------------------------------------------>
 
 			//demonstrativo de entrega
 			BeginPage(PAGE1);
@@ -48,7 +56,8 @@ while true do Begin
 				PAGE1.REC1.ENDERECO[4]     := SubStr(cep_entrega,1,5)+'-'+SubStr(cep_entrega,6,3);
 			WriteRecord(PAGE1,REC1);
 			EndPage(PAGE1);
-
+			folha := folha+1;
+			
 			//demonstrativo de entrega
 			BeginPage(PAGE2);
 			ClearFields(PAGE2,REC1);
@@ -62,7 +71,8 @@ while true do Begin
 				PAGE2.REC1.ENDERECO[4]     := SubStr(cep_entrega,1,5)+'-'+SubStr(cep_entrega,6,3);
 			WriteRecord(PAGE2,REC1);
 			EndPage(PAGE2);
-
+			folha := folha+1;
+			
 			BeginPage(PAGE3);
 			ClearFields(PAGE3,REC1);
 				PAGE3.REC1.CONTRIBUIN      := contribuinte;
@@ -88,8 +98,8 @@ while true do Begin
 				PAGE3.REC1.TAXAS[4]}
 			WriteRecord(PAGE3,REC1);
 			EndPage(PAGE3);
+			folha := folha+1;
 
-			
 			BeginPage(PAGE4);
 			ClearFields(PAGE4,REC1);
 				PAGE4.REC1.CONTRIBUIN      := contribuinte;
@@ -99,6 +109,8 @@ while true do Begin
 				PAGE4.REC1.PIX                      := trimStr(getstring(multlineItem(linha_pix,0),31,200));
 			WriteRecord(PAGE4,REC1);
 			EndPage(PAGE4);
+			folha := folha+1;
+			
 			c:= 0;
 			d:=  0;
 			for a:= 0 to qtdlinhas-1 do begin
@@ -126,6 +138,7 @@ while true do Begin
 								end;
 					WriteRecord(PAGE5,REC1);
 					EndPage(PAGE5);
+					folha := folha+1;
 				end;
 			end;
 		markup;
@@ -166,4 +179,5 @@ while true do Begin
 	if close =  1 then Break;
 	if ReadLn(S) = eof then close := 1;
 End;
+//abort(FormatNumeric(folha,'00000'));
 Convert(4,true,false,false,250,false);
