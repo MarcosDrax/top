@@ -6,9 +6,11 @@
 - Fazer logica que separa quantidades por caixa(OK)}
 //<-----------------------------------Script Padrão FIM------------------------------------------>
 AVS := 0;
+avs_log := 1;
 qtdcarne := 4;
 totFls := 0;
 flsCaixa := 1500; 
+sep:= ';';
 //<-----------------------------------variaveis Multiline INI------------------------------------------>
 Readln(s);
 impr := 0;
@@ -19,11 +21,13 @@ qtdlinhas := 0;
 qtd_pix:= 0;
 bloco_parc := 330;
 bloco_pix := 503;
+logTopdata      := CreateFileLog('Arquivo_RelatorioListagem.txt');
 //<-----------------------------------variaveis Multiline INI------------------------------------------>
 while true do Begin
 folha := 0;
 	ident        := TrimStr(GetString(S,1,1));
 	If (ident = '1') and (impr = 1) then Begin
+	
 	//<-----------------------------------variaveis padrão INI------------------------------------------>
 		cadastro            := GetString(linha_Cad,3,16);
 		contribuinte        := GetString(linha_Cad,19,150);
@@ -48,7 +52,8 @@ folha := 0;
 		venal_predio        := getfloat(linha_taxa,30,11);
 		venal_imovel        := getfloat(linha_taxa,41,11);
 	//<-----------------------------------variaveis padrão FIM------------------------------------------>
-			AVS := AVS+1;
+			WritelnFileLog(logTopdata,FormatNumeric(avs_log,'000.000')+sep+cadastro);
+			AVS := AVS+1;avs_log := avs_log+1;
 			//demonstrativo de entrega
 			BeginPage(PAGE1);
 			ClearFields(PAGE1,REC1);
@@ -169,6 +174,7 @@ folha := 0;
 		qtdlinhas   := 0;
 		qtd_pix     := 0;
 		impr        := 0;
+		CloseFileLog(logTopdata);
 	End;
 	
 		If ident = '1' then begin
@@ -200,7 +206,31 @@ folha := 0;
 	if close =  1 then Break;
 	if ReadLn(S) = eof then close := 1;
 End;
+Resumo_logTopdata      := CreateFileLog('Arquivo_ResumoLog.txt');
 qtd_caixa:= Ceil(flsCaixa / qtdcarne); {Quantidade de registros por Caixa}
 qtdColun:= Ceil(qtd_caixa/qtdcarne); {Quantidade de registros por Coluna}
 CaixaFls:= (qtdColun*totFls); {Quantidade de Folhas por Caixa}
+Num_caixa:= Ceil(AVS/qtd_caixa); {Quantidade de Caixa}
+
+Ln:= #13#10;
+resumo:= '   '+ Ln +
+' - Informação Geral '+ ln  +
+'Número de Registros: '+FormatFloat(AVS,'#####')+ln +
+'Quantidade de Caixa: '+FormatFloat(Num_caixa,'#####')+ln +
+' - Informações Do Lote '+ln +
+'Quantidade de Registro por Caixa: '+FormatFloat(qtd_caixa,'#####')+ln +
+'Quantidade de Registro por Coluna: '+FormatFloat(qtdColun,'#####')+ln +
+'Quantidade de Folhas por Caixa: '+FormatFloat(CaixaFls,'#####')+ln +
+' '+  ln; 
+
+WritelnFileLog(Resumo_logTopdata, resumo);
+
+{WritelnFileLog(Resumo_logTopdata ,+' - Informação Geral ');{Informações do REsul
+WritelnFileLog(Resumo_logTopdata ,+'Número de Registros: '+FormatFloat(AVS,'#####'));
+WritelnFileLog(Resumo_logTopdata ,+'Quantidade de Caixa: '+FormatFloat(Num_caixa,'#####'));
+WritelnFileLog(Resumo_logTopdata ,+' - Informações Do Lote ');
+WritelnFileLog(Resumo_logTopdata ,+'Quantidade de Registro por Caixa: '+FormatFloat(qtd_caixa,'#####'));
+WritelnFileLog(Resumo_logTopdata ,+'Quantidade de Registro por Coluna: '+FormatFloat(qtdColun,'#####'));
+WritelnFileLog(Resumo_logTopdata ,+'Quantidade de Folhas por Caixa: '+FormatFloat(CaixaFls,'#####'));}
+CloseFileLog(Resumo_logTopdata);
 Convert(qtdcarne,true,false,false,qtd_caixa,false);
