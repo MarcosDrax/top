@@ -1,16 +1,17 @@
-//<-----------------------------------Script Padrão INI------------------------------------------>
+//<-----------------------------------Script Padrão Variaveis INI------------------------------------------>
 {Criar um script que exiba um relatorio com o registro que estara em cada caixa e o numero da caixa, mais a quantidade total por caixa e a quantidade total do arquivo. 
  
 - Todos devem estar por profundidade(OK), 
 - não usar o script padrao, criar do zero. 
 - Fazer logica que separa quantidades por caixa(OK)}
-//<-----------------------------------Script Padrão FIM------------------------------------------>
 AVS := 0;
-avs_log := 1;
+CaixaAvs :=0;
 qtdcarne := 4;
 totFls := 0;
 flsCaixa := 1500; 
+CxLote:=0;
 sep:= ';';
+//<-----------------------------------Script Padrão Variaveis FIM------------------------------------------>
 //<-----------------------------------variaveis Multiline INI------------------------------------------>
 Readln(s);
 impr := 0;
@@ -22,13 +23,13 @@ qtd_pix:= 0;
 bloco_parc := 330;
 bloco_pix := 503;
 logTopdata      := CreateFileLog('Arquivo_RelatorioListagem.txt');
-//<-----------------------------------variaveis Multiline INI------------------------------------------>
+//<-----------------------------------Script Multiline INI------------------------------------------>
 while true do Begin
 folha := 0;
+
 	ident        := TrimStr(GetString(S,1,1));
 	If (ident = '1') and (impr = 1) then Begin
-	
-	//<-----------------------------------variaveis padrão INI------------------------------------------>
+	//<-----------------------------------variaveis Multiline INI------------------------------------------>
 		cadastro            := GetString(linha_Cad,3,16);
 		contribuinte        := GetString(linha_Cad,19,150);
 		inscricao           := GetString(linha_Cad,283,17);
@@ -51,9 +52,8 @@ folha := 0;
 		venal_terreno       := getfloat(linha_taxa,19,11);
 		venal_predio        := getfloat(linha_taxa,30,11);
 		venal_imovel        := getfloat(linha_taxa,41,11);
-	//<-----------------------------------variaveis padrão FIM------------------------------------------>
-			WritelnFileLog(logTopdata,FormatNumeric(avs_log,'000.000')+sep+cadastro);
-			AVS := AVS+1;avs_log := avs_log+1;
+		AVS := AVS+1;CaixaAvs  := CaixaAvs+1;
+	//<-----------------------------------variaveis Multiline FIM------------------------------------------>
 			//demonstrativo de entrega
 			BeginPage(PAGE1);
 			ClearFields(PAGE1,REC1);
@@ -167,14 +167,23 @@ folha := 0;
 			EndPage(PAGE6);
 			folha := folha+1;
 			
-		totFls:= folha; {folhas do miolo do carnê}			
-		markup;
+		totFls    := folha; {folhas do miolo do carnê}
+	markup;
 		linhas      := '';
-		linha_pix   :='';
+		linha_pix   := '';
 		qtdlinhas   := 0;
 		qtd_pix     := 0;
 		impr        := 0;
+		LoteCaixa := CaixaAvs;
+			
+
+		if  LoteCaixa = 375 then Begin 
+			CxLote:=CxLote+1;
+		end;
+		
+		WritelnFileLog(logTopdata,FormatFloat(CxLote,'9')+sep+FormatNumeric(AVS,'000.000')+sep+cadastro);
 		CloseFileLog(logTopdata);
+		
 	End;
 	
 		If ident = '1' then begin
@@ -205,32 +214,25 @@ folha := 0;
 		End;//linhas pix única e demais parcelas
 	if close =  1 then Break;
 	if ReadLn(S) = eof then close := 1;
+	
 End;
-Resumo_logTopdata      := CreateFileLog('Arquivo_ResumoLog.txt');
-qtd_caixa:= Ceil(flsCaixa / qtdcarne); {Quantidade de registros por Caixa}
-qtdColun:= Ceil(qtd_caixa/qtdcarne); {Quantidade de registros por Coluna}
-CaixaFls:= (qtdColun*totFls); {Quantidade de Folhas por Caixa}
-Num_caixa:= Ceil(AVS/qtd_caixa); {Quantidade de Caixa}
-
-Ln:= #13#10;
-resumo:= '   '+ Ln +
-' - Informação Geral '+ ln  +
-'Número de Registros: '+FormatFloat(AVS,'#####')+ln +
-'Quantidade de Caixa: '+FormatFloat(Num_caixa,'#####')+ln +
-' - Informações Do Lote '+ln +
-'Quantidade de Registro por Caixa: '+FormatFloat(qtd_caixa,'#####')+ln +
-'Quantidade de Registro por Coluna: '+FormatFloat(qtdColun,'#####')+ln +
-'Quantidade de Folhas por Caixa: '+FormatFloat(CaixaFls,'#####')+ln +
-' '+  ln; 
-
-WritelnFileLog(Resumo_logTopdata, resumo);
-
-{WritelnFileLog(Resumo_logTopdata ,+' - Informação Geral ');{Informações do REsul
-WritelnFileLog(Resumo_logTopdata ,+'Número de Registros: '+FormatFloat(AVS,'#####'));
-WritelnFileLog(Resumo_logTopdata ,+'Quantidade de Caixa: '+FormatFloat(Num_caixa,'#####'));
-WritelnFileLog(Resumo_logTopdata ,+' - Informações Do Lote ');
-WritelnFileLog(Resumo_logTopdata ,+'Quantidade de Registro por Caixa: '+FormatFloat(qtd_caixa,'#####'));
-WritelnFileLog(Resumo_logTopdata ,+'Quantidade de Registro por Coluna: '+FormatFloat(qtdColun,'#####'));
-WritelnFileLog(Resumo_logTopdata ,+'Quantidade de Folhas por Caixa: '+FormatFloat(CaixaFls,'#####'));}
-CloseFileLog(Resumo_logTopdata);
+		CaixaAvs               := 1;
+		Resumo_logTopdata      := CreateFileLog('Arquivo_ResumoLog.txt');
+		qtd_caixa              := Ceil(flsCaixa / qtdcarne); {Quantidade de registros por Caixa}
+		qtdColun               := Ceil(qtd_caixa/qtdcarne); {Quantidade de registros por Coluna}
+		CaixaFls               := (qtdColun*totFls); {Quantidade de Folhas por Caixa}
+		Num_caixa              := Ceil(AVS/qtd_caixa); {Quantidade de Caixa}
+		
+		Ln:= #13#10;
+		resumo:= '   '+ Ln +
+		' - Informação Geral '+ ln  +
+		'Número de Registros: '+FormatFloat(AVS,'#####')+ln +
+		'Quantidade de Caixa: '+FormatFloat(Num_caixa,'#####')+ln +
+		' - Informações Do Lote '+ln +
+		'Quantidade de Registro por Caixa: '+FormatFloat(qtd_caixa,'#####')+ln +
+		'Quantidade de Registro por Coluna: '+FormatFloat(qtdColun,'#####')+ln +
+		'Quantidade de Folhas por Caixa: '+FormatFloat(CaixaFls,'#####')+ln +
+		' '+  ln; 
+		WritelnFileLog(Resumo_logTopdata, resumo);
+		CloseFileLog(Resumo_logTopdata);
 Convert(qtdcarne,true,false,false,qtd_caixa,false);
