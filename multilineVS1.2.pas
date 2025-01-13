@@ -55,6 +55,7 @@ CxLote:=0;
 		venal_predio        := getfloat(linha_taxa,30,11);
 		venal_imovel        := getfloat(linha_taxa,41,11);}
 	//<-----------------------------------variaveis Multiline FIM------------------------------------------>
+		if PARCELA = qtd_pix then begin
 			AVS := AVS+1;
 			//demonstrativo de entrega
 			BeginPage(PAGE1);
@@ -107,33 +108,26 @@ CxLote:=0;
 				PAGE3.REC1.AVISO_TOP          := AVS;
 			WriteRecord(PAGE3,REC1);
 			EndPage(PAGE3);
-			folha := folha+1;
-			
-			BeginPage(PAGE4);
-			ClearFields(PAGE4,REC1);
-				PAGE4.REC1.CONTRIBUIN      := contribuinte;
-				PAGE4.REC1.INSCRIC         := inscricao;
-				PAGE4.REC1.IPTU_PREMI:= num_premiado;
-				PAGE4.REC1.CADASTRO := cadastro;
-				//PAGE4.REC1.PIX                      := trimStr(getstring(multlineItem(linha_pix,0),31,200));
-				PAGE4.REC1.AVISO_TOP          := AVS;
-			WriteRecord(PAGE4,REC1);
-			EndPage(PAGE4);
-			folha := folha+1;
-			
+			folha := folha+1;		
+		
 			for a:= 0 to qtd_pix-1 do begin
-					BeginPage(PAGE5);
-					ClearFields(PAGE5,REC1);
-						PAGE5.REC1.CONTRIBUIN      := contribuinte;
-						PAGE5.REC1.INSCRIC         := inscricao;
-						PAGE5.REC1.IPTU_PREMI      := num_premiado;
-						PAGE5.REC1.CADASTRO        := cadastro;
-						PAGE5.REC1.DT_UNICA        := getString(multlineItem(linha_parc,a),21,10);
-						PAGE5.REC1.LINHA_DIGI      := getstring(multlineItem(linha_parc,a),100,79);
-						PAGE5.REC1.AVISO_TOP       := AVS;
-						//PAGE5.REC1.PIX             := trimStr(getstring(multlineItem(linha_parc,c),56,200));
-					WriteRecord(PAGE5,REC1);
-					EndPage(PAGE5);
+					BeginPage(PAGE4);
+					ClearFields(PAGE4,REC1);
+					if ((getString(multlineItem(linha_parc,0),21,10) =  '16/09/2024') and (getString(multlineItem(linha_parc,1),21,10) =  '16/10/2024'))then Begin
+						parc:=parc+1;
+						PAGE4.REC1.PARCELA         := 'Unica' + FormatFloat(parc,'9');
+						end;
+						PAGE4.REC1.PARCELA         := getString(multlineItem(linha_parc,a),31,1);
+						PAGE4.REC1.CONTRIBUIN      := contribuinte;
+						PAGE4.REC1.INSCRIC         := inscricao;
+						PAGE4.REC1.IPTU_PREMI      := num_premiado;
+						PAGE4.REC1.CADASTRO        := cadastro;
+						PAGE4.REC1.DT_UNICA        := getString(multlineItem(linha_parc,a),21,10);
+						PAGE4.REC1.LINHA_DIGI      := getstring(multlineItem(linha_parc,a),100,79);
+						PAGE4.REC1.AVISO_TOP       := AVS;
+						PAGE4.REC1.COD_BARRAS      := trimStr(getstring(multlineItem(linha_parc,a),56,200));
+					WriteRecord(PAGE4,REC1);
+					EndPage(PAGE4);
 					folha := folha+1;
 			end;
 			
@@ -145,10 +139,11 @@ CxLote:=0;
 			WriteRecord(PAGE6,REC1);
 			EndPage(PAGE6);
 			folha := folha+1;
-			
+		end;	
 		totFls:= folha; {folhas do miolo do carnê}
 		CaixaAvs:= CaixaAvs+1;
 		markup;
+		//abort(FormatFloat(qtd_pix,'9'));
 		linha_parc   :='';
 		linhas_trib13:='';
 		linhas_trib14:='';
