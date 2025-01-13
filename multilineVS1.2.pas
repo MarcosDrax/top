@@ -5,6 +5,7 @@
 - não usar o script padrao, criar do zero. 
 - Fazer logica que separa quantidades por caixa(OK)}
 AVS := 0;
+parc := 0;
 CaixaAvs :=0;
 qtdcarne := 3;
 totFls := 0;
@@ -80,6 +81,7 @@ CxLote:=0;
 				PAGE2.REC1.INSCRIC         := cadastro;
 				PAGE2.REC1.RESPONSAVE      := responsavel;
 				PAGE2.REC1.PREMIADO        := num_premiado;
+				PAGE2.REC1.PARCELAS        := FormatFloat(qtd_pix,'9');
 				PAGE2.REC1.ENDERECO[1]     := endereco+' '+num_entrega;
 				PAGE2.REC1.ENDERECO[2]     := bairro_entrega+' '+num_entrega;
 				PAGE2.REC1.ENDERECO[3]     := cid_entrega+' '+uf_entrega;
@@ -131,13 +133,13 @@ CxLote:=0;
 					folha := folha+1;
 			end;
 			
-			BeginPage(PAGE6);
-			ClearFields(PAGE6,REC1);
-				PAGE6.REC1.CONTRIBUIN      := contribuinte;
-				PAGE6.REC1.INSCRIC         := inscricao;
-				PAGE6.REC1.AVISO_TOP          := AVS;
-			WriteRecord(PAGE6,REC1);
-			EndPage(PAGE6);
+			BeginPage(PAGE5);
+			ClearFields(PAGE5,REC1);
+				PAGE5.REC1.CONTRIBUIN      := contribuinte;
+				PAGE5.REC1.INSCRIC         := inscricao;
+				PAGE5.REC1.AVISO_TOP          := AVS;
+			WriteRecord(PAGE5,REC1);
+			EndPage(PAGE5);
 			folha := folha+1;
 		end;	
 		totFls:= folha; {folhas do miolo do carnê}
