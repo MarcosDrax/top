@@ -2,11 +2,16 @@ AVS:= 0;
 folha:= 0;
 ReadLn(S);
 DtVenc:='';
-    for i:=0 to 11 do begin
-        vencimento        := getstring(s,31+(i*5),0);
-        DtVenc            := multlineadd(DtVenc,vencimento);
-        qtdVetor          := MultLineCount(DtVenc); 
+odBarra:= '';
+LInhaDigit:='';
+LInhaPix := '';
+    for i:= 0 to 11 do begin
+        vencimento        := getstring(s,31+(i*5),0);        DtVenc            := multlineadd(DtVenc,vencimento);
+		barra             := getstring(s,195+(i*5),0);       CodBarra          := multlineadd(odBarra,barra);
+		linha             := getstring(s,198+(i*5),0);       LinhaDigit        := multlineadd(LinhaDigit,linha);
+		pix               := getstring(s,196+(i*5),0);       LInhaPix          := multlineadd(LInhaPix,pix);
     end;
+	qtdVetor          := MultLineCount(DtVenc); 
 	//abort(FormatFloat(qtdVetor,'9'));
 //<-----------------------------------Script Simplex INI------------------------------------------>
 While ReadLn(S) <> EOF do Begin
@@ -43,15 +48,14 @@ While ReadLn(S) <> EOF do Begin
 						PAGE1.REC1.CADASTRO        := cadastro;
 						PAGE1.REC1.AVISO_TOP       := AVS;
 						for a:= 0 to 4 do begin
-							PAGE1.REC1.DT_UNICA        := TrimStr(getstring(s,31+(a*5),0));
-							PAGE1.REC1.LINHA_DIGI      := TrimStr(getstring(s,198+(a*5),0));
-							PAGE1.REC1.COD_BARRAS      := TrimStr(getstring(s,195+(a*5),0));
-							PAGE1.REC1.PIX             := TrimStr(getstring(s,196+(a*5),0));
+							PAGE1.REC1.DT_UNICA        := DtVenc;
+							PAGE1.REC1.LINHA_DIGI      := LinhaDigit;
+							PAGE1.REC1.COD_BARRAS      := CodBarra;
+							PAGE1.REC1.PIX             := LinhaPix;
 						end;
 					WriteRecord(PAGE1,REC1);
 					EndPage(PAGE1);
 					folha := folha+1;
-			
 			
 			//demonstrativo de entrega
 			BeginPage(PAGE2);
