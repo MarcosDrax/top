@@ -1,25 +1,46 @@
 Readln(s);
 AVS       := 0;
 folha     := 0;
-cont      := 0;
+caractere := 0;
 DtVenc    :='';
 CodBarra  :='';
 LInhaDigit:='';
 LInhaPix  :='';
 option    :='';
+inicio    :=0;
 	//<-----------------------------------Condição utilizadas pelo Programa INI------------------------------------------>
     IF LOTE = 1 then begin option := 'CORREIO'; end;
 	IF LOTE = 2 then begin option := 'FISCAL'; end;
 	IF LOTE = 3 then begin option := 'NAO ENVIAR'; end;
 	IF LOTE = 4 then begin option := 'REMANESCENTE'; end;
 	//<----------------------------------------------------------------------------->
-	for c := 0 to 30 do begin
-		if subStr(getstring(s,189,0),c+1,1) <> '-' then begin
-			cont:=cont+1;
+	codigo := getstring(s,192,0);
+	FormtCod := Replace(codigo,'-',' ');
+	{for c := 0 to 30 do begin
+		if subStr(codigo,c+1,1) <> '-' then begin
+			caractere:=caractere+1;
 		end else begin
 			break;
 		end;
 	end;
+
+	for d := 0 to 30 do begin
+		if subStr(codigo,caractere+d,1) = '-' then begin
+			break;
+		end else begin
+			inicio:=inicio+1;
+		end;
+	end;
+	for e := 0 to 30 do begin
+		if subStr(codigo,caractere+d,1) = '-' then begin
+			break;
+		end else begin
+			tamanho:=tamanho+1;
+		end;
+	end;}
+abort(FormtCod);
+
+
 	//<-----------------------------------Condição utilizadas pelo Programa FIM------------------------------------------>
 //<-----------------------------------Script Simplex INI------------------------------------------>
 While ReadLn(S) <> EOF do Begin
@@ -55,7 +76,7 @@ While ReadLn(S) <> EOF do Begin
 		num_imovel          := GetString(S,13,0);
 		bairro_imovel       := GetString(S,15,0);
 		tpConst             := GetString(s,189,0);
-		codigo              := getstring(s,189,cont-1);
+		
 		loteEnvio           := trimStr(GetString(S,190,0));
 		//<-----------------------------------variaveis Multiline FIM------------------------------------------>
  		If  option =  loteEnvio then Begin {Condição para escolha do Lote}
@@ -82,6 +103,7 @@ While ReadLn(S) <> EOF do Begin
 			BeginPage(PAGE2);
 			ClearFields(PAGE2,REC1);
 				PAGE2.REC1.CONTRIBUIN      := contribuinte;
+				PAGE2.REC1.TIPO_CONST:= FormtCod;
 				PAGE2.REC1.INSCRIC         := cadastro;
 				PAGE2.REC1.RESPONSAVE      := responsavel;
 				PAGE2.REC1.PREMIADO        := num_premiado;
