@@ -1,22 +1,37 @@
+Readln(s);
 AVS:= 0;
 folha:= 0;
-ReadLn(S);
 DtVenc:='';
-odBarra:= '';
+CodBarra:= '';
 LInhaDigit:='';
 LInhaPix := '';
-    for i:= 0 to 11 do begin
-        vencimento        := getstring(s,31+(i*5),0);        DtVenc            := multlineadd(DtVenc,vencimento);
-		barra             := getstring(s,195+(i*5),0);       CodBarra          := multlineadd(odBarra,barra);
-		linha             := getstring(s,198+(i*5),0);       LinhaDigit        := multlineadd(LinhaDigit,linha);
-		pix               := getstring(s,196+(i*5),0);       LInhaPix          := multlineadd(LInhaPix,pix);
-    end;
-	qtdVetor          := MultLineCount(DtVenc); 
-	//abort(FormatFloat(qtdVetor,'9'));
+option := 0;
+	//<-----------------------------------Condição por Seleção de Lote------------------------------------------>
+    IF trimStr(getstring(s,190,0)) = 'CORREIO'  then begin option := 1; end;
+	IF trimStr(getstring(s,190,0)) = 'FISCAL'  then begin option := 2; end;
+	IF trimStr(getstring(s,190,0)) = 'NAO ENVIAR'  then begin option := 3; end;
+	IF trimStr(getstring(s,190,0)) = 'REMANESCENTE'  then begin option := 4; end;
+	IF trimStr(getstring(s,190,0)) = 'REMANESCENTE'  then begin option := 5; end;
+	//<-----------------------------------variaveis Multiline INI------------------------------------------>
 //<-----------------------------------Script Simplex INI------------------------------------------>
 While ReadLn(S) <> EOF do Begin
-
-	//<-----------------------------------variaveis Multiline INI------------------------------------------>
+		//<-----------------------------------variaveis Vetor------------------------------------------>
+		for i:= 0 to 11 do begin
+			IF trimStr(getstring(s,31+(i*5),0)) <> '' then begin
+				vencimento        := getstring(s,31+(i+5),0);        DtVenc            := multlineadd(DtVenc,vencimento);
+				barra             := getstring(s,195+(i+5),0);       CodBarra          := multlineadd(CodBarra,barra);
+				linha             := getstring(s,198+(i+5),0);       LinhaDigit        := multlineadd(LinhaDigit,linha);
+				pix               := getstring(s,196+(i+5),0);       LInhaPix          := multlineadd(LInhaPix,pix);
+			end else begin
+				break;
+			end;
+		end;
+		qtdVenc    := MultLineCount(DtVenc); 
+		qtdBarra   := MultLineCount(CodBarra); 
+		qtdDigit   := MultLineCount(LinhaDigit); 
+		qtdpix     := MultLineCount(LInhaPix); 
+		//<-----------------------------------variaveis Multiline INI------------------------------------------>
+		AVS                 := AVS+1;
 		cadastro            := GetString(S,2,0);
 		contribuinte        := GetString(S,7,0);
 		inscricao           := GetString(S,4,0);
@@ -36,9 +51,8 @@ While ReadLn(S) <> EOF do Begin
 		//area_terreno        := GetString(S,577,0);
 		//testada_principal   := GetString(S,586,0);
 		//area_edificada      := getfloat(S,594,0);
-		AVS                 := AVS+1;
-	//<-----------------------------------variaveis Multiline FIM------------------------------------------>
-
+		//<-----------------------------------variaveis Multiline FIM------------------------------------------>
+ 		If LOTE = option then Begin
 			//Parcelas variaveis		
 					BeginPage(PAGE1);
 					ClearFields(PAGE1,REC1);
@@ -72,6 +86,7 @@ While ReadLn(S) <> EOF do Begin
 			WriteRecord(PAGE2,REC1);
 			EndPage(PAGE2);
 			folha := folha+1;
+		End;
 			markup();
-End;
+end;
 //<-----------------------------------Script Simplex FIM------------------------------------------>
