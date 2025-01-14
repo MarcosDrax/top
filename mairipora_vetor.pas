@@ -1,17 +1,26 @@
 Readln(s);
-AVS:= 0;
-folha:= 0;
-DtVenc:='';
-CodBarra:= '';
+AVS       := 0;
+folha     := 0;
+cont      := 0;
+DtVenc    :='';
+CodBarra  :='';
 LInhaDigit:='';
-LInhaPix := '';
-option := 0;
-	//<-----------------------------------Condição por Seleção de Lote------------------------------------------>
-    IF trimStr(getstring(s,190,0)) = 'CORREIO'  then begin option := 1; end;
-	IF trimStr(getstring(s,190,0)) = 'FISCAL'  then begin option := 2; end;
-	IF trimStr(getstring(s,190,0)) = 'NAO ENVIAR'  then begin option := 3; end;
-	IF trimStr(getstring(s,190,0)) = 'REMANESCENTE'  then begin option := 4; end;
-	IF trimStr(getstring(s,190,0)) = 'REMANESCENTE'  then begin option := 5; end;
+LInhaPix  :='';
+option    :='';
+	//<-----------------------------------Condição utilizadas pelo Programa------------------------------------------>
+    IF LOTE = 1 then begin option := 'CORREIO'; end;
+	IF LOTE = 2 then begin option := 'FISCAL'; end;
+	IF LOTE = 3 then begin option := 'NAO ENVIAR'; end;
+	IF LOTE = 4 then begin option := 'REMANESCENTE'; end;
+	//<----------------------------------------------------------------------------->
+	for c := 0 to 30 do begin
+		if SubStr(GetString(s,189+c,0),1,1) <> '-' then begin
+			cont:=cont+1;
+		end else begin
+			break;
+		end;
+	end;
+
 	//<-----------------------------------variaveis Multiline INI------------------------------------------>
 //<-----------------------------------Script Simplex INI------------------------------------------>
 While ReadLn(S) <> EOF do Begin
@@ -46,13 +55,16 @@ While ReadLn(S) <> EOF do Begin
 		end_imovel          := GetString(S,12,0);
 		num_imovel          := GetString(S,13,0);
 		bairro_imovel       := GetString(S,15,0);
+		tpConst             := GetString(s,189,0);
+		codigo:= SubStr(tpConst,1,cont-1);
+		loteEnvio           := trimStr(GetString(S,190,0));
 		//quadra              := GetString(S,265,0);
 		//lote                := GetString(S,273,0);
 		//area_terreno        := GetString(S,577,0);
 		//testada_principal   := GetString(S,586,0);
 		//area_edificada      := getfloat(S,594,0);
 		//<-----------------------------------variaveis Multiline FIM------------------------------------------>
- 		If LOTE = option then Begin
+ 		If  option =  loteEnvio then Begin {Condição para escolha do Lote}
 			//Parcelas variaveis		
 					BeginPage(PAGE1);
 					ClearFields(PAGE1,REC1);
@@ -61,6 +73,7 @@ While ReadLn(S) <> EOF do Begin
 						PAGE1.REC1.IPTU_PREMI      := num_premiado;
 						PAGE1.REC1.CADASTRO        := cadastro;
 						PAGE1.REC1.AVISO_TOP       := AVS;
+						PAGE1.REC1.COD_CONSTR      := codigo;
 						for a:= 0 to 4 do begin
 							PAGE1.REC1.DT_UNICA        := DtVenc;
 							PAGE1.REC1.LINHA_DIGI      := LinhaDigit;
