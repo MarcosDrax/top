@@ -7,21 +7,20 @@ CodBarra  :='';
 LInhaDigit:='';
 LInhaPix  :='';
 option    :='';
-	//<-----------------------------------Condição utilizadas pelo Programa------------------------------------------>
+	//<-----------------------------------Condição utilizadas pelo Programa INI------------------------------------------>
     IF LOTE = 1 then begin option := 'CORREIO'; end;
 	IF LOTE = 2 then begin option := 'FISCAL'; end;
 	IF LOTE = 3 then begin option := 'NAO ENVIAR'; end;
 	IF LOTE = 4 then begin option := 'REMANESCENTE'; end;
 	//<----------------------------------------------------------------------------->
 	for c := 0 to 30 do begin
-		if SubStr(GetString(s,189+c,0),1,1) <> '-' then begin
+		if subStr(getstring(s,189,0),c+1,1) <> '-' then begin
 			cont:=cont+1;
 		end else begin
 			break;
 		end;
 	end;
-
-	//<-----------------------------------variaveis Multiline INI------------------------------------------>
+	//<-----------------------------------Condição utilizadas pelo Programa FIM------------------------------------------>
 //<-----------------------------------Script Simplex INI------------------------------------------>
 While ReadLn(S) <> EOF do Begin
 		//<-----------------------------------variaveis Vetor------------------------------------------>
@@ -56,13 +55,8 @@ While ReadLn(S) <> EOF do Begin
 		num_imovel          := GetString(S,13,0);
 		bairro_imovel       := GetString(S,15,0);
 		tpConst             := GetString(s,189,0);
-		codigo:= SubStr(tpConst,1,cont-1);
+		codigo              := getstring(s,189,cont-1);
 		loteEnvio           := trimStr(GetString(S,190,0));
-		//quadra              := GetString(S,265,0);
-		//lote                := GetString(S,273,0);
-		//area_terreno        := GetString(S,577,0);
-		//testada_principal   := GetString(S,586,0);
-		//area_edificada      := getfloat(S,594,0);
 		//<-----------------------------------variaveis Multiline FIM------------------------------------------>
  		If  option =  loteEnvio then Begin {Condição para escolha do Lote}
 			//Parcelas variaveis		
